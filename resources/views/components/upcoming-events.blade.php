@@ -38,7 +38,11 @@
     @endforeach
 
 @else
-    <div>
-        No upcoming events :(
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            No upcoming events
+        </div>
+        <div class="col-md-4"></div>
     </div>
 @endif
