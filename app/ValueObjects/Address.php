@@ -9,12 +9,12 @@ class Address {
     private $longitude;
     private $latitude;
 
-    private $address_line_one;
-    private $address_line_two;
 
-    private $country;
-
-    private $city;
+    private $country = '';
+    private $locality = ''; // Also known as City name, but this is what Google calls it.
+    private $postal_code = '';
+    private $route = ''; // Also known as streetname, but this is what Google calls it.
+    private $street_number = '';
 
     public function __construct($latitude, $longitude)
     {
@@ -24,26 +24,30 @@ class Address {
         $this->populateAddressDetails($latitude, $latitude);
     }
 
+    public function longitude(): float
+    {
+        return (float) $this->longitude;
+    }
+
+    public function latitude(): float
+    {
+        return (float) $this->latitude;
+    }
+
     public function addressLineOne()
     {
-        return $this->address_line_one;
+        return "{$this->route} {$this->street_number}";
     }
 
     public function addressLineTwo()
     {
-        return $this->address_line_two;
+        return "{$this->postal_code}, {$this->locality}";
     }
 
     public function country()
     {
         return $this->country;
     }
-
-    public function city()
-    {
-        return $this->city;
-    }
-
     /**
      * Populates the rest of the object with the address details from Google maps
      * @param $latitude
@@ -51,18 +55,20 @@ class Address {
      */
     private function populateAddressDetails($latitude, $longitude)
     {
-        $mapsApiKey = config('maps.api_key');
+        $mapsApiKey = config('services.google_maps.api_key');
 
         $data = Http::get(
-            "https://maps.googleapis.com/maps/api/geocode/json?
-            latlng={$latitude},{$longitude}&key={$mapsApiKey}"
+            "https://maps.googleapis.com/maps/api/geocode/json" .
+            "?latlng={$latitude},{$longitude}&key={$mapsApiKey}"
         )->object();
 
-        dd($data);
-
-//        if($data->status !== 'OK') {
-//            throw new \Exception("Google Maps API failed");
-//        }
-
+        if($data->status === 'OK') {
+            foreach($data->results[0]->address_components as $component) {
+                $property = $component->types[0];
+                if(property_exists(self::class, $property)) {
+                    $this->$property = $component->long_name;
+                }
+            }
+        }
     }
 }

@@ -2,22 +2,20 @@
 
 namespace App\Models;
 
+use App\Casts\Address;
 use App\Models\User;
-use App\Pivots\UsersAttending;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use \Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 
 class Event extends Model
 {
     protected $fillable = [
+        'description',
         'title',
-        'event_date'
     ];
 
     protected $dates = [
@@ -25,7 +23,7 @@ class Event extends Model
     ];
 
     protected $casts = [
-        'address'
+        'address' => Address::class
     ];
 
     public function scopeFuture(Builder $query)

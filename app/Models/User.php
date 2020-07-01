@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -42,15 +43,17 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function attendingEvents(): HasManyThrough
+    public function attendingEvents(): BelongsToMany
     {
-        return $this->hasManyThrough(Event::class, 'users_attending')
+        return $this->belongsToMany(Event::class, 'users_attending')
+            ->withTimestamps()
             ->where('events.timestamp','>=', Carbon::now());
     }
 
-    public function attendedEvents(): HasManyThrough
+    public function attendedEvents(): BelongsToMany
     {
-        return $this->hasManyThrough(Event::class, 'users_attending')
+        return $this->belongsToMany(Event::class, 'users_attending')
+            ->withTimestamps()
             ->where('events.timestamp','<=', Carbon::now());
     }
 }

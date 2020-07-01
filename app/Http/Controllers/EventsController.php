@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AttendEvent;
+use App\Http\Requests\StoreEvent;
 use App\Models\Event;
 use App\Models\User;
 use Illuminate\Contracts\Foundation\Application;
@@ -13,24 +15,13 @@ use Illuminate\View\View;
 class EventsController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @param Request $request
-     * @return void
-     */
-    public function index(Request $request)
-    {
-        //
-    }
-
-    /**
      * Show the form for creating a new resource.
      *
      * @return Response
      */
     public function create()
     {
-        //
+        return view('events.create');
     }
 
     /**
@@ -39,9 +30,9 @@ class EventsController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function store(Request $request)
+    public function store(StoreEvent $request)
     {
-        //
+        dd($request->all());
     }
 
     /**
@@ -89,11 +80,15 @@ class EventsController extends Controller
         //
     }
 
-    public function userAttendsEvent(Event $event, User $user)
+    public function userAttendsEvent(AttendEvent $request, Event $event, User $user)
     {
-        $event->attendees()->attach($user);
+        if($request->get('attending')) {
+            $event->attendees()->attach($user);
+        } else {
+            $event->attendees()->detach($user);
+        }
 
-        return view('events.show', ['event' => $event]);
-
+        return redirect()->route('event.show', ['event' => $event])
+            ->with('attending', $request->get('attending'));
     }
 }

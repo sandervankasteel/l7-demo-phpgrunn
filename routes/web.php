@@ -3,6 +3,7 @@
 use App\Http\Controllers\EventsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WelcomeController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -29,5 +30,5 @@ Route::resource('profile', ProfileController::class)->except(['index', 'edit']);
 
 // Event routes
 Route::resource('events', EventsController::class)->except('show');
-Route::get('/event/{event:slug}', [EventsController::class, 'show']);
-Route::post('/event/{event:slug}/attends/{user}', [EventsController::class, 'userAttendsEvent']);
+Route::get('/event/{event:slug}', [EventsController::class, 'show'])->name('event.show');
+Route::post('/event/{event:slug}/attends/{user}', [EventsController::class, 'userAttendsEvent'])->name('event.attending');
